@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"time"
 )
 
 func main() {
@@ -27,10 +28,19 @@ func main() {
 }
 
 func handle(conn net.Conn) {
+	//! The connection will lost after 10s
+	err := conn.SetDeadline(time.Now().Add(10 * time.Second))
+
+	if err != nil {
+		log.Println("Connection Lost")
+	}
+
 	scanner := bufio.NewScanner(conn)
 	for scanner.Scan() {
 		ln := scanner.Text()
 		fmt.Println(ln)
+		//! this will get the data.
+		fmt.Fprintf(conn, "I heard you say: %s\n", ln)
 	}
 	defer conn.Close()
 
