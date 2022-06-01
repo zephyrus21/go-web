@@ -2,6 +2,7 @@ package renders
 
 import (
 	"basic-web/pkg/config"
+	"basic-web/pkg/models"
 	"bytes"
 	"fmt"
 	"html/template"
@@ -19,9 +20,16 @@ func NewTemplates(a *config.AppConfig) {
 }
 
 //! renders a template to the response writer with the given template name
-func RenderTemplate(w http.ResponseWriter, tmpl string) {
-	//# gets the template cache from the app config
-	tc := app.TemplateCache
+func RenderTemplate(w http.ResponseWriter, tmpl string, data *models.TemplateData) {
+	var tc map[string]*template.Template
+
+	if app.UseCache {
+		//# gets the template cache from the app config
+		tc = app.TemplateCache
+	} else {
+		//# rebuilds the cache
+		tc, _ = CreateTemplateCache()
+	}
 
 	//# gets the template to be rendered from the cache
 	t, ok := tc[tmpl]
@@ -33,7 +41,7 @@ func RenderTemplate(w http.ResponseWriter, tmpl string) {
 	buf := new(bytes.Buffer)
 
 	//# renders the template to the buffer
-	_ = t.Execute(buf, nil)
+	_ = t.Execute(buf, data)
 
 	//# writes the buffer to the response writer
 	_, err := buf.WriteTo(w)
