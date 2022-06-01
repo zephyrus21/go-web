@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"basic-web/pkg/renders"
-	"fmt"
 	"net/http"
 )
 
@@ -11,5 +10,5 @@ func Home(w http.ResponseWriter, r *http.Request) {
 }
 
 func About(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "About page!")
+	renders.RenderTemplate(w, "about.page.tmpl")
 }
