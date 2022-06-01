@@ -1,6 +1,7 @@
 package renders
 
 import (
+	"basic-web/pkg/config"
 	"bytes"
 	"fmt"
 	"html/template"
@@ -10,13 +11,17 @@ import (
 )
 
 var functions = template.FuncMap{}
+var app *config.AppConfig
+
+//? sets the config for the template cache
+func NewTemplates(a *config.AppConfig) {
+	app = a
+}
 
 //! renders a template to the response writer with the given template name
 func RenderTemplate(w http.ResponseWriter, tmpl string) {
-	tc, err := CreateTemplateCache()
-	if err != nil {
-		log.Fatal(err)
-	}
+	//# gets the template cache from the app config
+	tc := app.TemplateCache
 
 	//# gets the template to be rendered from the cache
 	t, ok := tc[tmpl]
@@ -31,7 +36,7 @@ func RenderTemplate(w http.ResponseWriter, tmpl string) {
 	_ = t.Execute(buf, nil)
 
 	//# writes the buffer to the response writer
-	_, err = buf.WriteTo(w)
+	_, err := buf.WriteTo(w)
 	if err != nil {
 		fmt.Println("error writing template:", err)
 	}
