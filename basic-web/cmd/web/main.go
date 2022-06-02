@@ -7,10 +7,23 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
+
+	"github.com/alexedwards/scs/v2"
 )
 
+var app config.AppConfig
+var session *scs.SessionManager
+
 func main() {
-	var app config.AppConfig
+	session = scs.New()
+	session.Lifetime = 24 * time.Hour
+	session.Cookie.Persist = true
+	session.Cookie.SameSite = http.SameSiteLaxMode
+	session.Cookie.Secure = false
+
+	app.Session = session
+
 	//# creates a new template cache
 	tc, err := renders.CreateTemplateCache()
 	if err != nil {
