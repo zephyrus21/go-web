@@ -28,9 +28,19 @@ func main() {
 	//# creates the new template cache
 	renders.NewTemplates(&app)
 
-	http.HandleFunc("/", handlers.Repo.Home)
-	http.HandleFunc("/about", handlers.Repo.About)
+	// http.HandleFunc("/", handlers.Repo.Home)
+	// http.HandleFunc("/about", handlers.Repo.About)
 
 	fmt.Println("Server started on :8080")
-	http.ListenAndServe(":8080", nil)
+	// http.ListenAndServe(":8080", nil)
+
+	server := &http.Server{
+		Addr:    ":8080",
+		Handler: routes(&app),
+	}
+
+	err = server.ListenAndServe()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
